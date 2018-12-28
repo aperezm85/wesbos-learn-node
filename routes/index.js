@@ -1,57 +1,72 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const { catchErrors } = require('../handlers/errorHandlers')
-const storeController = require('../controllers/storeController')
-const userController = require('../controllers/userController')
-const authController = require('../controllers/authController')
+const { catchErrors } = require("../handlers/errorHandlers");
+const storeController = require("../controllers/storeController");
+const userController = require("../controllers/userController");
+const authController = require("../controllers/authController");
 
-router.get('/', catchErrors(storeController.getStores));
-router.get('/add', authController.isLoggedIn, storeController.addStore);
+router.get("/", catchErrors(storeController.getStores));
+router.get("/add", authController.isLoggedIn, storeController.addStore);
 
-router.post('/add',
+router.post(
+  "/add",
   storeController.upload,
   catchErrors(storeController.resize),
   catchErrors(storeController.createStore)
-)
+);
 
-router.post('/add/:id',
+router.post(
+  "/add/:id",
   storeController.upload,
   catchErrors(storeController.resize),
-  catchErrors(storeController.updateStore))
+  catchErrors(storeController.updateStore)
+);
 
-router.get('/stores', catchErrors(storeController.getStores))
-router.get('/stores/:id/edit', catchErrors(storeController.editStore))
+router.get("/stores", catchErrors(storeController.getStores));
+router.get("/stores/:id/edit", catchErrors(storeController.editStore));
 // router.get('/reverse/:name', (req, res) => {
 //   const reverse = [...req.params.name].reverse().join('')
 //   res.send(reverse)
 // })
 
-router.get('/store/:slug', catchErrors(storeController.getStoreBySlug))
+router.get("/store/:slug", catchErrors(storeController.getStoreBySlug));
 
-router.get('/tags', catchErrors(storeController.getStoresByTag))
-router.get('/tags/:tag', catchErrors(storeController.getStoresByTag))
+router.get("/tags", catchErrors(storeController.getStoresByTag));
+router.get("/tags/:tag", catchErrors(storeController.getStoresByTag));
 
+router.get("/login", userController.loginForm);
+router.post("/login", authController.login);
+router.get("/register", userController.registerForm);
 
-router.get('/login', userController.loginForm)
-router.post('/login', authController.login)
-router.get('/register', userController.registerForm)
-
-
-router.post('/register',
+router.post(
+  "/register",
   userController.validateRegister,
   userController.register,
-  authController.login)
+  authController.login
+);
 
-router.get('/logout', authController.logout)
+router.get("/logout", authController.logout);
 
+router.get("/account", authController.isLoggedIn, userController.account);
+router.post(
+  "/account",
+  authController.isLoggedIn,
+  catchErrors(userController.updateAccount)
+);
 
-router.get('/account', authController.isLoggedIn, userController.account)
-router.post('/account', authController.isLoggedIn, catchErrors(userController.updateAccount))
-
-router.post('/account/forgot', catchErrors(authController.forgot))
-router.get('/account/reset/:token', catchErrors(authController.reset))
-router.post('/account/reset/:token',
+router.post("/account/forgot", catchErrors(authController.forgot));
+router.get("/account/reset/:token", catchErrors(authController.reset));
+router.post(
+  "/account/reset/:token",
   authController.confirmedPasswords,
-  catchErrors(authController.update))
+  catchErrors(authController.update)
+);
+
+/**
+ * API
+ **/
+
+router.get("/api/search", catchErrors(storeController.searchStores));
+
 module.exports = router;
